@@ -6,7 +6,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/kai-xlr/pokedexcli/pokeapi"
+	"github.com/kai-xlr/pokedexcli/internal/pokeapi"
 )
 
 type config struct {
