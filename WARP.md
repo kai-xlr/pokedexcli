@@ -5,15 +5,16 @@ This file provides guidance to WARP (warp.dev) when working with code in this re
 Project summary
 - Language/toolchain: Go (module mode)
 - Module: github.com/kai-xlr/pokedexcli
-- Minimum Go version (from go.mod): 1.25.1
-- Entry-point: cmd/main/main.go
-- Packages: internal/repl (with unit tests)
-- Notes: No Makefile, CI, or linter config detected. README.md is minimal.
+- Minimum Go version (from go.mod): 1.21
+- Entry-point: main.go (root directory)
+- Architecture: Interactive REPL with modular command system
+- Commands: help, exit (with extensible command architecture)
+- Notes: No Makefile, CI, or linter config detected. Simple flat structure.
 
 Common commands
 - Build the CLI binary to the repo root:
 ```bash path=null start=null
-go build -o pokedexcli ./cmd/main
+go build -o pokedexcli .
 ```
 - Run the built binary:
 ```bash path=null start=null
@@ -23,13 +24,13 @@ go build -o pokedexcli ./cmd/main
 ```bash path=null start=null
 go test ./...
 ```
-- Run tests verbosely for the repl package:
+- Run tests verbosely for the current package:
 ```bash path=null start=null
-go test -v ./internal/repl
+go test -v .
 ```
-- Run a single test (or filtered subset) in the repl package:
+- Run a single test (or filtered subset) in the current package:
 ```bash path=null start=null
-go test -v -run 'TestCleanInput' ./internal/repl
+go test -v -run 'TestCleanInput' .
 ```
 - Static checks and formatting (no external linter configured):
 ```bash path=null start=null
@@ -41,22 +42,36 @@ gofmt -s -w .
 ```
 
 High-level architecture and structure
-- cmd/main/main.go
-  - Program entry-point. Currently prints a placeholder message ("Hello, World!").
-  - This is the only main package; building from ./cmd/main produces the pokedexcli binary.
+- main.go
+  - Program entry-point. Calls RunRepl() to start the interactive REPL.
+  - Simple main function that delegates to the REPL implementation.
 
-- internal/repl
-  - Purpose: Shared library code for the CLI (currently only input normalization).
-  - cleanInput(text string) []string
-    - Lowercases the input string and splits on whitespace (collapses multiple spaces, handles tabs/newlines).
-    - Leaves punctuation intact while normalizing case.
-  - Unit tests (internal/repl/repl_test.go) cover whitespace handling, lowercasing, punctuation retention, and non-ASCII behavior.
+- repl.go
+  - Core REPL implementation with command system architecture.
+  - RunRepl() - Main REPL loop that reads input, processes commands, and handles responses.
+  - cleanInput(text string) []string - Input normalization (lowercase, whitespace splitting).
+  - getCommands() - Returns map of available commands with their callbacks.
+  - cliCommand struct - Defines command structure (name, description, callback).
+
+- command_help.go
+  - Implementation of the 'help' command.
+  - Lists available commands with descriptions.
+
+- command_exit.go
+  - Implementation of the 'exit' command.
+  - Cleanly exits the application.
+
+- repl_test.go
+  - Unit tests for the cleanInput function.
+  - Tests cover whitespace handling, lowercasing, punctuation retention, and edge cases.
 
 - Root
-  - go.mod declares the module and Go version.
+  - go.mod declares the module and Go version (1.21).
   - A built binary (pokedexcli) may exist in the repo root after running the build command.
 
 Development notes
 - There is no Makefile or task runner; prefer direct go commands noted above.
 - No repository-level linter configuration is present; use go vet and gofmt as shown.
-- If you add new packages intended for internal use by the CLI, prefer placing them under internal/ to keep APIs constrained to this module.
+- The current architecture uses a flat structure with all code in the main package.
+- To add new commands: create a new command_*.go file with a function matching the callback signature, then add it to the getCommands() map in repl.go.
+- For future expansion, consider moving to internal/ packages if the codebase grows significantly.

@@ -7,12 +7,16 @@ import (
 	"strings"
 )
 
+// cliCommand represents a command available in the REPL.
+// It contains the command name, a description for help text, and a callback function to execute.
 type cliCommand struct {
 	name        string
 	description string
 	callback    func() error
 }
 
+// RunRepl starts the Read-Eval-Print Loop for the Pokédex CLI.
+// It continuously reads user input, processes commands, and displays results until the program exits.
 func RunRepl() {
 	scanner := bufio.NewScanner(os.Stdin)
 	for {
@@ -41,12 +45,16 @@ func RunRepl() {
 	}
 }
 
+// cleanInput normalizes user input by converting to lowercase and splitting on whitespace.
+// It returns a slice of words with leading/trailing whitespace removed and multiple spaces collapsed.
 func cleanInput(text string) []string {
 	lowerCase := strings.ToLower(text)
 	trimmed := strings.Fields(lowerCase)
 	return trimmed
 }
 
+// getCommands returns a map of all available commands in the REPL.
+// The map keys are command names and values are cliCommand structs containing command details.
 func getCommands() map[string]cliCommand {
 	return map[string]cliCommand{
 		"help": {

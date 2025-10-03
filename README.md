@@ -4,13 +4,14 @@ A command-line interface for interacting with Pokémon data, built in Go.
 
 ## Features
 
-- Command-line interface for Pokémon workflows (scaffolded)
-- Input normalization utilities in `internal/repl`
-- Modular structure for future expansion
+- Interactive REPL (Read-Eval-Print Loop) interface
+- Built-in command system with help and exit commands
+- Input normalization and command parsing
+- Modular command architecture for easy extension
 
 ## Requirements
 
-- Go 1.25.1 or later
+- Go 1.21 or later
 
 ## Installation (from source)
 
@@ -19,7 +20,7 @@ Clone the repository and build the binary:
 ```bash
 git clone https://github.com/kai-xlr/pokedexcli.git
 cd pokedexcli
-go build -o pokedexcli ./cmd/main
+go build -o pokedexcli .
 ```
 
 ## Usage
@@ -30,18 +31,23 @@ Run the CLI application:
 ./pokedexcli
 ```
 
+The application will start an interactive prompt where you can enter commands:
+
+- `help` - Display available commands and their descriptions
+- `exit` - Exit the Pokédex CLI
+
 ## Development
 
 ### Project structure
 
 ```
 .
-├── cmd/main/           # Application entry point
-│   └── main.go        # Main executable (currently prints "Hello, World!")
-├── internal/repl/     # Input normalization utilities with tests
-│   ├── repl.go       # cleanInput: lowercase + whitespace tokenization
-│   └── repl_test.go  # Unit tests for cleanInput
-├── go.mod            # Module definition (go 1.25.1)
+├── main.go           # Application entry point - starts the REPL
+├── repl.go           # REPL implementation with command system
+├── repl_test.go      # Unit tests for input processing
+├── command_help.go   # Help command implementation
+├── command_exit.go   # Exit command implementation
+├── go.mod            # Module definition (go 1.21)
 ├── WARP.md           # Warp-specific guidance
 └── README.md         # This file
 ```
@@ -49,7 +55,7 @@ Run the CLI application:
 ### Build
 
 ```bash
-go build -o pokedexcli ./cmd/main
+go build -o pokedexcli .
 ```
 
 ### Test

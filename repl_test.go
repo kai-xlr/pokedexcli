@@ -4,6 +4,9 @@ import (
 	"testing"
 )
 
+// TestCleanInput tests the cleanInput function with various input scenarios.
+// It verifies that the function properly normalizes input by lowercasing text,
+// trimming whitespace, and splitting words while preserving punctuation.
 func TestCleanInput(t *testing.T) {
 	cases := []struct {
 		name     string
