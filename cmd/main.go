@@ -3,9 +3,9 @@
 package main
 
 import (
-	"fmt"
+	"github.com/kai-xlr/pokedexcli/internal/repl"
 )
 
 func main() {
-	fmt.Println("Hello, World!")
+	repl.RunRepl()
 }

@@ -89,3 +89,4 @@ coverage/
 # Temporary files
 tmp/
 temp/
+repl.log
