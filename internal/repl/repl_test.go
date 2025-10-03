@@ -69,7 +69,7 @@ func TestCleanInput(t *testing.T) {
 
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
-			actual := cleanInput(c.input)
+			actual := CleanInput(c.input)
 			if len(actual) != len(c.expected) {
 				t.Fatalf("expected %d words, got %d (actual=%v)", len(c.expected), len(actual), actual)
 			}
