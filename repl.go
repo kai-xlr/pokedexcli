@@ -57,6 +57,11 @@ func cleanInput(text string) []string {
 // The map keys are command names and values are cliCommand structs containing command details.
 func getCommands() map[string]cliCommand {
 	return map[string]cliCommand{
+		"map": {
+			name:        "map",
+			description: "Displays 20 locations",
+			callback:    commandMap,
+		},
 		"help": {
 			name:        "help",
 			description: "Displays a help message",
