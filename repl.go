@@ -15,6 +15,12 @@ type cliCommand struct {
 	callback    func() error
 }
 
+type config struct {
+	pokeapiClient    pokeapi.Client
+	nextLocationsURL *string
+	prevLocationsURL *string
+}
+
 // RunRepl starts the Read-Eval-Print Loop for the Pokédex CLI.
 // It continuously reads user input, processes commands, and displays results until the program exits.
 func RunRepl() {
@@ -57,15 +63,20 @@ func cleanInput(text string) []string {
 // The map keys are command names and values are cliCommand structs containing command details.
 func getCommands() map[string]cliCommand {
 	return map[string]cliCommand{
-		"map": {
-			name:        "map",
-			description: "Displays 20 locations",
-			callback:    commandMap,
-		},
 		"help": {
 			name:        "help",
 			description: "Displays a help message",
 			callback:    commandHelp,
+		},
+		"map": {
+			name:        "map",
+			description: "Get the next page of locations",
+			callback:    commandMapf,
+		},
+		"mapb": {
+			name:        "mapb",
+			description: "Get the previous page of locations",
+			callback:    commandMapb,
 		},
 		"exit": {
 			name:        "exit",
