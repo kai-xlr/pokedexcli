@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"os"
 	"strings"
+
+	"github.com/kai-xlr/pokedexcli/internal/pokeapi"
 )
 
 // cliCommand represents a command available in the REPL.
@@ -12,18 +14,18 @@ import (
 type cliCommand struct {
 	name        string
 	description string
-	callback    func() error
+	callback    func(*config) error
 }
 
 type config struct {
-	pokeapiClient    pokeapi.Client
+	pokeapiClient    *pokeapi.Client
 	nextLocationsURL *string
 	prevLocationsURL *string
 }
 
 // RunRepl starts the Read-Eval-Print Loop for the Pokédex CLI.
 // It continuously reads user input, processes commands, and displays results until the program exits.
-func RunRepl() {
+func RunRepl(cfg *config) {
 	scanner := bufio.NewScanner(os.Stdin)
 	for {
 		fmt.Print("Pokedex > ")
@@ -38,7 +40,7 @@ func RunRepl() {
 		commandName := cleaned[0]
 		command, exists := getCommands()[commandName]
 		if exists {
-			err := command.callback()
+			err := command.callback(cfg)
 			if err != nil {
 				fmt.Println(err)
 			}
