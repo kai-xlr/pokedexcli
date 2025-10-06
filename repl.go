@@ -29,15 +29,15 @@ func RunRepl(cfg *config) {
 	scanner := bufio.NewScanner(os.Stdin)
 	for {
 		fmt.Print("Pokedex > ")
-		if !scanner.Scan() {
-			break
-		}
+		scanner.Scan()
+
 		cleaned := cleanInput(scanner.Text())
 		if len(cleaned) == 0 {
 			continue
 		}
 
 		commandName := cleaned[0]
+
 		command, exists := getCommands()[commandName]
 		if exists {
 			err := command.callback(cfg)
