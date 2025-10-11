@@ -6,7 +6,7 @@ import (
 
 // commandHelp displays a welcome message and lists all available commands with their descriptions.
 // This function is called when the user enters the "help" command in the REPL.
-func commandHelp(cfg *config) error {
+func commandHelp(cfg *config, args ...string) error {
 	fmt.Println("Welcome to the Pokedex!")
 	fmt.Println("Usage:")
 

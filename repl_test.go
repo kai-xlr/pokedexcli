@@ -85,7 +85,7 @@ func TestCleanInput(t *testing.T) {
 		{
 			name:     "unicode whitespace",
 			input:    "\u00A0test\u00A0", // non-breaking spaces
-			expected: []string{"\u00A0test\u00A0"},
+			expected: []string{"test"}, // strings.Fields removes unicode whitespace
 		},
 	}
 
@@ -110,12 +110,13 @@ func TestGetCommands(t *testing.T) {
 	commands := getCommands()
 
 	// Test that all expected commands exist
-	expectedCommands := []string{"help", "map", "mapb", "exit"}
+	expectedCommands := []string{"help", "explore", "map", "mapb", "exit"}
 	for _, expectedCmd := range expectedCommands {
 		if cmd, exists := commands[expectedCmd]; !exists {
 			t.Errorf("expected command %q to exist", expectedCmd)
 		} else {
-			if cmd.name != expectedCmd {
+			// Skip name comparison for explore command as it includes usage info
+			if expectedCmd != "explore" && cmd.name != expectedCmd {
 				t.Errorf("expected command name %q, got %q", expectedCmd, cmd.name)
 			}
 			if cmd.description == "" {
@@ -147,9 +148,9 @@ func TestGetCommands(t *testing.T) {
 
 func TestConfigInitialization(t *testing.T) {
 	// Test that a config can be properly initialized
-	pokeClient := pokeapi.NewClient(5 * time.Second)
+	pokeClient := pokeapi.NewClient(5*time.Second, time.Minute*5)
 	cfg := &config{
-		pokeapiClient: pokeClient,
+		pokeapiClient: &pokeClient,
 	}
 
 	if cfg.pokeapiClient == nil {
@@ -165,7 +166,7 @@ func TestConfigInitialization(t *testing.T) {
 
 func TestCliCommandStruct(t *testing.T) {
 	// Test that cliCommand struct works as expected
-	testCallback := func(cfg *config) error {
+	testCallback := func(cfg *config, args ...string) error {
 		return nil
 	}
 
@@ -186,8 +187,9 @@ func TestCliCommandStruct(t *testing.T) {
 	}
 
 	// Test callback execution
+	pokeClient := pokeapi.NewClient(1*time.Second, time.Minute)
 	cfg := &config{
-		pokeapiClient: pokeapi.NewClient(1 * time.Second),
+		pokeapiClient: &pokeClient,
 	}
 	err := cmd.callback(cfg)
 	if err != nil {
