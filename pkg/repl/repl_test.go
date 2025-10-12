@@ -1,11 +1,8 @@
-package main
+package repl
 
 import (
 	"reflect"
 	"testing"
-	"time"
-
-	"github.com/kai-xlr/pokedexcli/internal/pokeapi"
 )
 
 // TestCleanInput tests the cleanInput function with various input scenarios.
@@ -85,7 +82,7 @@ func TestCleanInput(t *testing.T) {
 		{
 			name:     "unicode whitespace",
 			input:    "\u00A0test\u00A0", // non-breaking spaces
-			expected: []string{"test"}, // strings.Fields removes unicode whitespace
+			expected: []string{"test"},   // strings.Fields removes unicode whitespace
 		},
 	}
 
@@ -106,92 +103,77 @@ func TestCleanInput(t *testing.T) {
 	}
 }
 
-func TestGetCommands(t *testing.T) {
-	commands := getCommands()
+func TestCommandRegistry(t *testing.T) {
+	registry := NewCommandRegistry()
 
-	// Test that all expected commands exist
-	expectedCommands := []string{"help", "explore", "map", "mapb", "exit"}
-	for _, expectedCmd := range expectedCommands {
-		if cmd, exists := commands[expectedCmd]; !exists {
-			t.Errorf("expected command %q to exist", expectedCmd)
-		} else {
-			// Skip name comparison for explore command as it includes usage info
-			if expectedCmd != "explore" && cmd.name != expectedCmd {
-				t.Errorf("expected command name %q, got %q", expectedCmd, cmd.name)
-			}
-			if cmd.description == "" {
-				t.Errorf("expected non-empty description for command %q", expectedCmd)
-			}
-			if cmd.callback == nil {
-				t.Errorf("expected non-nil callback for command %q", expectedCmd)
-			}
-		}
+	// Test registering a command
+	cmd := Command{
+		Name:        "test",
+		Description: "A test command",
+		Callback:    func(cfg *Config, args ...string) error { return nil },
 	}
 
-	// Test that no unexpected commands exist
-	if len(commands) != len(expectedCommands) {
-		t.Errorf("expected %d commands, got %d", len(expectedCommands), len(commands))
-		for name := range commands {
-			found := false
-			for _, expected := range expectedCommands {
-				if name == expected {
-					found = true
-					break
-				}
-			}
-			if !found {
-				t.Errorf("unexpected command %q found", name)
-			}
-		}
+	registry.Register("test", cmd)
+
+	// Test retrieving the command
+	retrieved, exists := registry.Get("test")
+	if !exists {
+		t.Error("expected command to exist")
+	}
+
+	if retrieved.Name != "test" {
+		t.Errorf("expected name 'test', got '%s'", retrieved.Name)
+	}
+
+	// Test non-existent command
+	_, exists = registry.Get("nonexistent")
+	if exists {
+		t.Error("expected command not to exist")
 	}
 }
 
-func TestConfigInitialization(t *testing.T) {
-	// Test that a config can be properly initialized
-	pokeClient := pokeapi.NewClient(5*time.Second, time.Minute*5)
-	cfg := &config{
-		pokeapiClient: &pokeClient,
+func TestNewConfig(t *testing.T) {
+	// Test that NewConfig creates a proper config
+	cfg := NewConfig(nil)
+
+	if cfg == nil {
+		t.Error("expected config to be created")
 	}
 
-	if cfg.pokeapiClient == nil {
-		t.Error("expected pokeapiClient to be initialized")
+	if cfg.CaughtPokemon == nil {
+		t.Error("expected CaughtPokemon map to be initialized")
 	}
-	if cfg.nextLocationsURL != nil {
-		t.Error("expected nextLocationsURL to be nil initially")
-	}
-	if cfg.prevLocationsURL != nil {
-		t.Error("expected prevLocationsURL to be nil initially")
+
+	if len(cfg.CaughtPokemon) != 0 {
+		t.Error("expected CaughtPokemon map to be empty initially")
 	}
 }
 
-func TestCliCommandStruct(t *testing.T) {
-	// Test that cliCommand struct works as expected
-	testCallback := func(cfg *config, args ...string) error {
+func TestCommandStruct(t *testing.T) {
+	// Test that Command struct works as expected
+	testCallback := func(cfg *Config, args ...string) error {
 		return nil
 	}
 
-	cmd := cliCommand{
-		name:        "test",
-		description: "test command",
-		callback:    testCallback,
+	cmd := Command{
+		Name:        "test",
+		Description: "test command",
+		Callback:    testCallback,
 	}
 
-	if cmd.name != "test" {
-		t.Errorf("expected name %q, got %q", "test", cmd.name)
+	if cmd.Name != "test" {
+		t.Errorf("expected name %q, got %q", "test", cmd.Name)
 	}
-	if cmd.description != "test command" {
-		t.Errorf("expected description %q, got %q", "test command", cmd.description)
+	if cmd.Description != "test command" {
+		t.Errorf("expected description %q, got %q", "test command", cmd.Description)
 	}
-	if cmd.callback == nil {
+	if cmd.Callback == nil {
 		t.Error("expected callback to not be nil")
 	}
 
 	// Test callback execution
-	pokeClient := pokeapi.NewClient(1*time.Second, time.Minute)
-	cfg := &config{
-		pokeapiClient: &pokeClient,
-	}
-	err := cmd.callback(cfg)
+	cfg := NewConfig(nil)
+	err := cmd.Callback(cfg)
 	if err != nil {
 		t.Errorf("expected no error from test callback, got %v", err)
 	}

@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/kai-xlr/pokedexcli/internal/pokecache"
+	"github.com/kai-xlr/pokedexcli/pkg/pokecache"
 )
 
 // Client -

@@ -1,3 +1,11 @@
+# Pokédex CLI - Go Project .gitignore
+# This file specifies intentionally untracked files that Git should ignore.
+# See: https://git-scm.com/docs/gitignore
+
+# =============================================================================
+# GO-SPECIFIC IGNORES
+# =============================================================================
+
 # Binaries for programs and plugins
 *.exe
 *.exe~
@@ -10,9 +18,15 @@
 
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
+*.html
 
-# Dependency directories (remove the comment below to include it)
-# vendor/
+# Go coverage files
+coverage.txt
+coverage.out
+profile.out
+
+# Dependency directories
+vendor/
 
 # Go workspace file
 go.work
@@ -23,13 +37,55 @@ pokedexcli
 pokedex-cli
 /bin/
 /build/
+/dist/
 
-# IDE and editor files
+# Build artifacts
+*.prof
+*.cpu
+*.mem
+
+# =============================================================================
+# IDE AND EDITOR FILES
+# =============================================================================
 .vscode/
 .idea/
 *.swp
 *.swo
 *~
+
+# GoLand
+.idea/
+*.iws
+*.iml
+*.ipr
+
+# Visual Studio Code
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# Vim
+*.swp
+*.swo
+*~
+Session.vim
+.netrwhist
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+
+# =============================================================================
+# OPERATING SYSTEM FILES
+# =============================================================================
 
 # macOS
 .DS_Store
@@ -67,6 +123,10 @@ Desktop.ini
 .directory
 .Trash-*
 
+# =============================================================================
+# APPLICATION-SPECIFIC IGNORES
+# =============================================================================
+
 # Logs
 *.log
 
@@ -85,8 +145,60 @@ coverage/
 .env.development.local
 .env.test.local
 .env.production.local
+.envrc
+
+# Configuration files (if they contain secrets)
+config.json
+config.yaml
+config.yml
+*.secret
+*.key
+*.pem
+*.crt
+*.p12
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
 
 # Temporary files
 tmp/
 temp/
+*.tmp
+*.temp
 repl.log
+
+# Archive files
+*.tar
+*.tar.gz
+*.tgz
+*.zip
+*.rar
+*.7z
+
+# Benchmark results
+benchmark.txt
+bench.out
+
+# Air live reload tool
+.air.toml
+tmp/
+
+# Delve debugger
+__debug_bin
+
+# Local development
+.local/
+local.go
+*_local.go
+
+# Documentation build
+docs/build/
+site/
+
+# =============================================================================
+# PROJECT-SPECIFIC PATTERNS
+# =============================================================================
+
+# Add any project-specific ignore patterns here
